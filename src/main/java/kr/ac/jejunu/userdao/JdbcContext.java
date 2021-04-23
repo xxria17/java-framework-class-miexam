@@ -1,10 +1,7 @@
 package kr.ac.jejunu.userdao;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class JdbcContext {
     DataSource dataSource;
@@ -108,25 +105,40 @@ public class JdbcContext {
         }
     }
 
-    void jdbcContextDelete(StatementStrategy statementStrategy) throws SQLException {
-        Connection connection = null;
-        PreparedStatement preparedStatement = null;
-        try {
-            connection = dataSource.getConnection();
-            preparedStatement = statementStrategy.makeStatement(connection);
-            preparedStatement.execute();
+    User get(Object[] objects, String sql) throws SQLException {
+        StatementStrategy statementStrategy = connection -> {
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(sql);
+            for (int i = 0; i < objects.length; i++) {
+                preparedStatement.setObject(i+1, objects[i]);
+            }
+            return preparedStatement;
+        };
+        return jdbcContextGet(statementStrategy);
+    }
 
-        } finally {
-            try {
-                preparedStatement.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
+    int insert(Object[] objects, String sql) throws SQLException {
+        StatementStrategy statementStrategy = connection -> {
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(sql,
+                            Statement.RETURN_GENERATED_KEYS);
+            for (int i = 0; i < objects.length; i++) {
+                preparedStatement.setObject(i+1, objects[i]);
             }
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
+            return preparedStatement;
+        };
+        return jdbcContextInsert(statementStrategy);
+    }
+
+    void update(Object[] objects, String sql) throws SQLException {
+        StatementStrategy statementStrategy = connection -> {
+            PreparedStatement preparedStatement =
+                    connection.prepareStatement(sql);
+            for (int i = 0; i < objects.length; i++) {
+                preparedStatement.setObject(i+1, objects[i]);
             }
-        }
+            return preparedStatement;
+        };
+        jdbcContextUpdate(statementStrategy);
     }
 }
