@@ -25,7 +25,7 @@ public class UserDaoTests {
     }
 
     @Test
-    public void testGet() throws SQLException {
+    public void testGet() {
         Integer id = 1;
         User user = userDao.get(id);
         assertThat(user.getId(), is(id));
@@ -34,7 +34,7 @@ public class UserDaoTests {
     }
 
     @Test
-    public void testInsert() throws SQLException {
+    public void testInsert() {
         Integer id = userDao.insert(name, password);
 
         User user = userDao.get(id);
@@ -44,7 +44,7 @@ public class UserDaoTests {
     }
 
     @Test
-    public void testUpdate() throws SQLException {
+    public void testUpdate() {
         Integer id = userDao.insert(name, password);
         User user = userDao.get(id);
 
@@ -62,7 +62,7 @@ public class UserDaoTests {
     }
 
     @Test
-    public void testDelete() throws SQLException {
+    public void testDelete() {
         Integer id = userDao.insert(name, password);
 
         userDao.delete(id);
