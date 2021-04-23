@@ -20,12 +20,13 @@ public class UserDao {
             preparedStatement.setLong(1, id);
 
             resultSet = preparedStatement.executeQuery();
-            resultSet.next();
+            if (resultSet.next()) {
+                user = new User();
+                user.setId(resultSet.getInt("id"));
+                user.setName(resultSet.getString("name"));
+                user.setPassword(resultSet.getString("password"));
+            }
 
-            user = new User();
-            user.setId(resultSet.getInt("id"));
-            user.setName(resultSet.getString("name"));
-            user.setPassword(resultSet.getString("password"));
         } finally {
             try {
                 resultSet.close();
@@ -85,5 +86,57 @@ public class UserDao {
 
         //리턴
         return id;
+    }
+
+    public void update(User user) throws SQLException {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            connection = dataSource.getConnection();
+            preparedStatement =
+                    connection.prepareStatement("update userinfo set name = ?, password = ? where id = ?");
+            preparedStatement.setString(1, user.getName());
+            preparedStatement.setString(2, user.getPassword());
+            preparedStatement.setInt(3, user.getId());
+            preparedStatement.execute();
+
+        } finally {
+            try {
+                preparedStatement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    public void delete(Integer id) throws SQLException {
+        Connection connection = null;
+        PreparedStatement preparedStatement = null;
+        try {
+            connection = dataSource.getConnection();
+            preparedStatement =
+                    connection.prepareStatement("delete from userinfo where id = ?");
+            preparedStatement.setInt(1, id);
+            preparedStatement.execute();
+
+        } finally {
+            try {
+                preparedStatement.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            try {
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 }
