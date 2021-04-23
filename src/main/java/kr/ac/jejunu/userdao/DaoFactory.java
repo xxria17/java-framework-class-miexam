@@ -21,7 +21,7 @@ public class DaoFactory {
 
     @Bean
     public UserDao getUserDao() {
-        return new UserDao(dataSource());
+        return new UserDao(jdbcContext());
     }
     @Bean
     public DataSource dataSource() {
@@ -35,5 +35,10 @@ public class DaoFactory {
         simpleDriverDataSource.setUsername(username);
         simpleDriverDataSource.setPassword(password);
         return simpleDriverDataSource;
+    }
+
+    @Bean
+    public JdbcContext jdbcContext() {
+        return new JdbcContext(dataSource());
     }
 }
